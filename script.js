@@ -1,9 +1,21 @@
 const cvs = document.getElementById("canvas");
 const ctx = cvs.getContext('2d');
 const box = 32;
+let score = 0;
+const scoreDiv = document.querySelector("#score");
+scoreDiv.innerText = score;
+
+let snake = [];
+
+let food = {
+    x: Math.floor(Math.random() * 17 + 1) * box,
+    y: Math.floor(Math.random() * 15 + 3) * box
+};
 
 
-let d;
+let d;      //key direction
+
+//event listener (snake controller)
 const direction = function(event){
     let key = event.keyCode;
         if (key == 37 && d != "RIGHT"){
@@ -41,27 +53,6 @@ const drawMap = function(){
 
 drawMap();
 
-let snake = [];
-snake[0] = {
-    x: 9 * box,
-    y: 10 * box
-};
-
-let food = {
-    x: Math.floor(Math.random() * 17 + 1) * box,
-    y: Math.floor(Math.random() * 15 + 3) * box
-};
-
-const drawSnake = function(){
-    ctx.fillStyle = "White";
-    snake.forEach(snakeNode => ctx.fillRect(snakeNode.x, snakeNode.y, box, box));
-}
-
-const drawFood = function(){
-    ctx.fillStyle = "Red";
-    ctx.fillRect(food.x, food.y, box, box);
-}
-
 const collision = function(head, array){
     for (let i = 0; i < array.length; i++){
         if (head.x == array[i].x && head.y == array[i].y){
@@ -69,18 +60,28 @@ const collision = function(head, array){
         }
     }
     return false;
-}
+};
+
+const drawSnake = function(){
+    ctx.fillStyle = "White";
+    snake.forEach(snakeNode => ctx.fillRect(snakeNode.x, snakeNode.y, box, box));
+};
+
+const drawFood = function(){
+    ctx.fillStyle = "Red";
+    ctx.fillRect(food.x, food.y, box, box);
+};
+
+
 
 const mainDraw = function(){
-   
+    console.log('eluwina');
     drawMap();
     drawSnake();
     drawFood();
 
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
-
-    
 
     switch(d){
         case "LEFT": snakeX -= box; break;
@@ -94,9 +95,12 @@ const mainDraw = function(){
             x: Math.floor(Math.random() * 17 + 1) * box,
             y: Math.floor(Math.random() * 15 + 3) * box
         };
+        score++;
     }else{
         snake.pop();
     }
+
+    scoreDiv.innerText = score;
 
     let newHead = { 
         x: snakeX,
@@ -107,11 +111,18 @@ const mainDraw = function(){
         || snakeY > 17 * box || collision(newHead, snake)){
         clearInterval(game);
     }
-    
-
-
-
     snake.unshift(newHead);
-}
+};
 
-let game = setInterval(mainDraw, 100);
+
+let game;
+const startGame = function(){
+    d = null;
+    score = 0;
+    snake = [];
+    snake[0] = {
+        x: 9 * box,
+        y: 10 * box
+    };
+    game = setInterval(mainDraw, 100);
+};
